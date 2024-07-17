@@ -1,5 +1,5 @@
 const root = document.querySelector("#root");
-
+let slider_index = 0;
 const images = [
   "https://www.vinterier.ru/pictures/shop/krasivyiy-peiyzag-kartina-maslom-40x30.jpg",
   "https://kartin.papik.pro/uploads/posts/2023-07/thumbs/1688461053_kartin-papik-pro-p-kartinki-priroda-leto-krasivie-v-khoroshem-56.jpg",
@@ -8,19 +8,73 @@ const images = [
 ];
 
 const frame = document.createElement("div");
-frame.classList.add("frame");
 const cards = document.createElement("div");
+frame.classList.add("frame");
 cards.classList.add("cards");
-const triggers = document.createElement("div");
-triggers.classList.add("triggers");
 
-const leftBtn = document.createElement("button");
-leftBtn.classList.add("leftBtn");
-leftBtn.textContent = "<";
-const rightBtn = document.createElement("button");
-rightBtn.classList.add("rightBtn");
-rightBtn.textContent = ">";
-
-triggers.append(leftBtn, rightBtn);
-frame.append(cards, triggers);
+for (let i = 0; i < images.length; i++) {
+  const card = document.createElement("div");
+  card.classList.add("card");
+  card.style.backgroundImage = `url("${images[i]}")`;
+  cards.append(card);
+}
+frame.append(cards);
 root.append(frame);
+
+function create_rounds() {
+  const container = document.createElement("div");
+  container.classList.add("rounds");
+  for (let i = 0; i < images.length; i++) {
+    const button = document.createElement("button");
+    if (i === 0) {
+      button.classList.add("active");
+    }
+    container.append(button);
+    button.addEventListener("click", function () {
+      slider_index = i;
+      updateSlider();
+    });
+  }
+  frame.append(container);
+}
+
+const left_btn = document.createElement("button");
+const right_btn = document.createElement("button");
+const triggers = document.createElement("div");
+left_btn.innerText = "<";
+right_btn.innerText = ">";
+triggers.classList.add("triggers");
+triggers.append(left_btn, right_btn);
+frame.append(triggers);
+
+function go_left() {
+  if (slider_index !== 0) {
+    slider_index--;
+    updateSlider();
+  }
+}
+
+function go_right() {
+  if (slider_index < images.length - 1) {
+    slider_index++;
+    updateSlider();
+  }
+}
+
+function updateSlider() {
+  cards.style.left = `${-1 * slider_index * 500}px`;
+
+  const allButtons = document.querySelectorAll(".rounds button");
+  allButtons.forEach((button, index) => {
+    if (index === slider_index) {
+      button.classList.add("active");
+    } else {
+      button.classList.remove("active");
+    }
+  });
+}
+
+left_btn.addEventListener("click", go_left);
+right_btn.addEventListener("click", go_right);
+
+create_rounds();
